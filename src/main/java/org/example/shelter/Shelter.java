@@ -13,6 +13,7 @@ public class Shelter <T extends Animal>{
         animals.add(animal);
     }
 
+    // Return an unmodifiable copy so callers cannot mutate the internal list directly
     public List<T> getAllAnimals(){
         return List.copyOf(animals);
     }
@@ -21,9 +22,8 @@ public class Shelter <T extends Animal>{
         if (species == null || species.isBlank()){
             return List.of();
         }
-        String target = species.trim();
         return animals.stream()
-                .filter(animal -> animal.getSpecies().equalsIgnoreCase(target))
+                .filter(animal -> animal.getSpecies().equalsIgnoreCase(species))
                 .toList();
     }
 
@@ -33,15 +33,15 @@ public class Shelter <T extends Animal>{
                 .toList();
     }
 
+    // Throw IllegalArgumentException on invalid input or missing ID so callers can handle it explicitly
     public void markAsAdopted(String id){
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Id must not be null or blank");
         }
-        String targetId = id.trim();
-        Animal found = animals.stream()
-                .filter(animal -> animal.getId() != null && animal.getId().toString().equals(targetId))
+        T found = animals.stream()
+                .filter(animal -> animal.getId() != null && animal.getId().toString().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Animal with id not found: " + targetId));
+                .orElseThrow(() -> new IllegalArgumentException("Animal with id not found: " + id));
         found.markAsAdopted();
     }
 }
